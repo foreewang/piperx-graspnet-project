@@ -1,0 +1,20 @@
+robot:
+  model: PIPER_X
+  firmware: DEFAULT
+  interface: agx_cando
+  channel: "0"
+  bitrate: 1000000
+  timeout: 1.0
+  receive_own_messages: false
+  local_loopback: false
+
+motion:
+  max_step_m: 0.02
+  default_speed_percent: 20
+  pregrasp_offset_m: 0.08
+  lift_offset_m: 0.08
+
+gripper:
+  type: agx_gripper
+  open_width_m: 0.07
+  close_width_m: 0.0

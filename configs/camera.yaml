@@ -1,0 +1,13 @@
+camera:
+  type: placeholder
+  serial: ""
+  rgb_width: 1280
+  rgb_height: 720
+  depth_width: 1280
+  depth_height: 720
+  fps: 30
+
+pointcloud:
+  voxel_size_m: 0.003
+  workspace_min: [-0.4, -0.4, 0.0]
+  workspace_max: [0.6, 0.4, 0.8]

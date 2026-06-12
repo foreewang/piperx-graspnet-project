@@ -1,0 +1,15 @@
+calibration:
+  # Replace this identity matrix with measured hand-eye calibration.
+  T_base_camera:
+    - [1.0, 0.0, 0.0, 0.0]
+    - [0.0, 1.0, 0.0, 0.0]
+    - [0.0, 0.0, 1.0, 0.0]
+    - [0.0, 0.0, 0.0, 1.0]
+
+tcp:
+  # Optional transform from robot flange to gripper TCP.
+  T_flange_tcp:
+    - [1.0, 0.0, 0.0, 0.0]
+    - [0.0, 1.0, 0.0, 0.0]
+    - [0.0, 0.0, 1.0, 0.0]
+    - [0.0, 0.0, 0.0, 1.0]

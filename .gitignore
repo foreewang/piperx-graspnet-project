@@ -1,0 +1,34 @@
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Packaging/build outputs
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local runtime data
+data/captures/*
+data/grasp_outputs/*
+!data/captures/.gitkeep
+!data/grasp_outputs/.gitkeep
+
+# Local machine/editor files
+.vscode/
+.idea/
+*.log
+
+# Large model weights/checkpoints
+*.pth
+*.pt
+*.ckpt
+*.onnx

@@ -1,0 +1,11 @@
+graspnet:
+  checkpoint: ""
+  num_point: 20000
+  collision_thresh: 0.01
+  voxel_size: 0.005
+  top_k: 10
+
+selection:
+  min_score: 0.1
+  max_width_m: 0.085
+  prefer_highest_score: true
