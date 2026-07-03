@@ -19,13 +19,22 @@ env/
 # Local runtime data
 data/captures/*
 data/grasp_outputs/*
+data/moveit_requests/*
+data/moveit_results/*
 !data/captures/.gitkeep
 !data/grasp_outputs/.gitkeep
+!data/moveit_requests/.gitkeep
+!data/moveit_results/.gitkeep
 
 # Local machine/editor files
 .vscode/
 .idea/
 *.log
+
+# ROS2 workspace outputs
+ros2_ws/build/
+ros2_ws/install/
+ros2_ws/log/
 
 # Large model weights/checkpoints
 *.pth
