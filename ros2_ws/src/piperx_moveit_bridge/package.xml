@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>piperx_moveit_bridge</name>
+  <version>0.1.0</version>
+  <description>Bridge JSON pick requests from piperx_graspnet_project into ROS2 MoveIt planning.</description>
+  <maintainer email="TODO@example.com">TODO</maintainer>
+  <license>TODO</license>
+
+  <depend>rclpy</depend>
+  <depend>geometry_msgs</depend>
+  <depend>trajectory_msgs</depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
