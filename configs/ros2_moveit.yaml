@@ -1,0 +1,21 @@
+ros2:
+  workspace: ros2_ws
+  package: piperx_moveit_bridge
+
+moveit:
+  planning_group: piper_arm
+  base_frame: piperx_base
+  end_effector_link: tool0
+  planner_id: RRTConnectkConfigDefault
+  allowed_planning_time_s: 5.0
+  velocity_scaling: 0.1
+  acceleration_scaling: 0.1
+  request_path: data/moveit_requests/latest_plan_request.json
+  result_path: data/moveit_results/latest_plan_result.json
+  # Optional [x, y, z, roll, pitch, yaw] place target.
+  place_pose: null
+
+simulation:
+  use_fake_hardware: true
+  planning_only: true
+  execute_in_rviz: false
