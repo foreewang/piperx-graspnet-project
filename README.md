@@ -379,3 +379,21 @@ Windows -> 读取规划结果并安全执行真机动作
 ```
 
 不要直接把未经验证的 GraspNet 输出发送给真实机械臂执行。
+
+# Windows-WSL robot pose bridge
+
+The eye-in-hand calibration collector runs in WSL, while real PiperX feedback
+comes from this Windows project. Start the read-only TCP client after the WSL
+collector or `check_pose_bridge` is listening:
+
+```powershell
+cd C:\piperx\piperx_graspnet_project
+conda activate piperx
+python scripts\08_run_pose_bridge.py
+```
+
+The client only reads actual flange pose, joint position, motion status, and
+joint velocity. It never enables or moves the arm. The protocol is UTF-8 NDJSON
+over `127.0.0.1:8765`; WSL requests `base_link -> gripper_base` only when a
+calibration sample is captured. Network and frame settings are in
+`configs/pose_bridge.yaml`.

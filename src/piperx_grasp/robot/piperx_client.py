@@ -101,6 +101,40 @@ class PiperXClient:
             time.sleep(poll_s)
         raise TimeoutError(f"no valid flange pose received; last_pose={last_pose}")
 
+    def wait_joint_angles(
+        self,
+        timeout_s: float = 2.0,
+        poll_s: float = 0.05,
+    ) -> list[float]:
+        import time
+
+        start_t = time.monotonic()
+        while time.monotonic() - start_t <= timeout_s:
+            joint_angles = self.get_joint_angles()
+            if joint_angles is not None and len(joint_angles) == 6:
+                return [float(value) for value in joint_angles]
+            time.sleep(poll_s)
+        raise TimeoutError(
+            f"no complete six-joint feedback received within {timeout_s:.1f}s"
+        )
+
+    def wait_arm_status(
+        self,
+        timeout_s: float = 2.0,
+        poll_s: float = 0.05,
+    ) -> Any:
+        import time
+
+        start_t = time.monotonic()
+        while time.monotonic() - start_t <= timeout_s:
+            status = self.get_arm_status()
+            if status is not None:
+                return status
+            time.sleep(poll_s)
+        raise TimeoutError(
+            f"no arm status feedback received within {timeout_s:.1f}s"
+        )
+
     def is_connected(self) -> bool:
         return bool(self.robot is not None and self.robot.is_connected())
 
@@ -109,17 +143,62 @@ class PiperXClient:
             raise RuntimeError("Robot is not connected.")
         return self.robot
 
+    def get_feedback_frame_status(self) -> dict[str, bool]:
+        parser = getattr(self._require_robot(), "_parser", None)
+        frames = {
+            "0x2A1 arm_status": "arm_status",
+            "0x2A2 end_pose_xy": "end_pose_xy",
+            "0x2A3 end_pose_zrx": "end_pose_zrx",
+            "0x2A4 end_pose_ryrz": "end_pose_ryrz",
+            "0x2A5 joint_12": "joint_12",
+            "0x2A6 joint_34": "joint_34",
+            "0x2A7 joint_56": "joint_56",
+        }
+        return {
+            label: parser is not None and getattr(parser, attribute, None) is not None
+            for label, attribute in frames.items()
+        }
+
+    def _feedback_frames_ready(self, attributes: tuple[str, ...]) -> bool:
+        parser = getattr(self._require_robot(), "_parser", None)
+        return bool(
+            parser is not None
+            and all(getattr(parser, attribute, None) is not None for attribute in attributes)
+        )
+
     def get_joint_angles(self) -> Any:
+        if not self._feedback_frames_ready(("joint_12", "joint_34", "joint_56")):
+            return None
         result = self._require_robot().get_joint_angles()
         return None if result is None else result.msg
 
     def get_flange_pose(self) -> Any:
+        feedback = self.get_flange_pose_feedback()
+        return None if feedback is None else feedback[0]
+
+    def get_flange_pose_feedback(self) -> tuple[Any, float] | None:
+        if not self._feedback_frames_ready(
+            ("end_pose_xy", "end_pose_zrx", "end_pose_ryrz")
+        ):
+            return None
         result = self._require_robot().get_flange_pose()
-        return None if result is None else result.msg
+        if result is None:
+            return None
+        return result.msg, float(result.timestamp)
 
     def get_arm_status(self) -> Any:
         result = self._require_robot().get_arm_status()
         return None if result is None else result.msg
+
+    def get_joint_velocities(self) -> list[float] | None:
+        robot = self._require_robot()
+        velocities = []
+        for joint_index in range(1, 7):
+            result = robot.get_motor_states(joint_index)
+            if result is None:
+                return None
+            velocities.append(float(result.msg.velocity))
+        return velocities
 
     def move_j(self, joints: list[float]) -> Any:
         return self._require_robot().move_j(joints)

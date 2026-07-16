@@ -1,0 +1,23 @@
+network:
+  host: 127.0.0.1
+  port: 8765
+  connect_timeout_s: 3.0
+  reconnect_delay_s: 1.0
+
+identity:
+  client_id: windows-piperx-controller
+  robot_id: piperx-001
+
+frames:
+  # Piper SDK flange feedback is treated as link6. The active PiperX URDF has a
+  # fixed link6 -> gripper_base rotation of +90 degrees around Z.
+  T_flange_gripper_base:
+    - [0.0, -1.0, 0.0, 0.0]
+    - [1.0,  0.0, 0.0, 0.0]
+    - [0.0,  0.0, 1.0, 0.0]
+    - [0.0,  0.0, 0.0, 1.0]
+
+feedback:
+  stopped_velocity_threshold_rad_s: 0.01
+  stability_wait_timeout_s: 1.5
+  poll_interval_s: 0.05

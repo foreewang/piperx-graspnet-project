@@ -51,3 +51,47 @@ def invert_transform(matrix: np.ndarray) -> np.ndarray:
     inv[:3, :3] = matrix[:3, :3].T
     inv[:3, 3] = -inv[:3, :3] @ matrix[:3, 3]
     return inv
+
+
+def matrix_to_quaternion_xyzw(matrix: np.ndarray) -> list[float]:
+    if matrix.shape != (4, 4):
+        raise ValueError("Expected a 4x4 matrix.")
+    rotation = matrix[:3, :3]
+    trace = float(np.trace(rotation))
+    if trace > 0.0:
+        scale = math.sqrt(trace + 1.0) * 2.0
+        w = 0.25 * scale
+        x = (rotation[2, 1] - rotation[1, 2]) / scale
+        y = (rotation[0, 2] - rotation[2, 0]) / scale
+        z = (rotation[1, 0] - rotation[0, 1]) / scale
+    else:
+        index = int(np.argmax(np.diag(rotation)))
+        if index == 0:
+            scale = math.sqrt(
+                1.0 + rotation[0, 0] - rotation[1, 1] - rotation[2, 2]
+            ) * 2.0
+            w = (rotation[2, 1] - rotation[1, 2]) / scale
+            x = 0.25 * scale
+            y = (rotation[0, 1] + rotation[1, 0]) / scale
+            z = (rotation[0, 2] + rotation[2, 0]) / scale
+        elif index == 1:
+            scale = math.sqrt(
+                1.0 + rotation[1, 1] - rotation[0, 0] - rotation[2, 2]
+            ) * 2.0
+            w = (rotation[0, 2] - rotation[2, 0]) / scale
+            x = (rotation[0, 1] + rotation[1, 0]) / scale
+            y = 0.25 * scale
+            z = (rotation[1, 2] + rotation[2, 1]) / scale
+        else:
+            scale = math.sqrt(
+                1.0 + rotation[2, 2] - rotation[0, 0] - rotation[1, 1]
+            ) * 2.0
+            w = (rotation[1, 0] - rotation[0, 1]) / scale
+            x = (rotation[0, 2] + rotation[2, 0]) / scale
+            y = (rotation[1, 2] + rotation[2, 1]) / scale
+            z = 0.25 * scale
+    quaternion = np.asarray([x, y, z, w], dtype=float)
+    quaternion /= np.linalg.norm(quaternion)
+    if quaternion[3] < 0.0:
+        quaternion *= -1.0
+    return quaternion.tolist()

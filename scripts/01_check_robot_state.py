@@ -10,10 +10,33 @@ def main() -> int:
     client.connect()
     try:
         print("connected:", client.is_connected())
-        print("joint_angles:", client.get_joint_angles())
-        print("flange_pose:", client.get_flange_pose())
-        print("arm_status:", client.get_arm_status())
-        return 0
+        success = True
+        try:
+            joint_angles = client.wait_joint_angles(timeout_s=3.0)
+        except TimeoutError as error:
+            joint_angles = None
+            success = False
+            print("joint feedback error:", error)
+        print("joint_angles:", joint_angles)
+        try:
+            flange_pose = client.wait_flange_pose(
+                timeout_s=3.0,
+                min_z=float("-inf"),
+            )
+        except TimeoutError as error:
+            flange_pose = None
+            success = False
+            print("flange feedback error:", error)
+        print("flange_pose:", flange_pose)
+        try:
+            arm_status = client.wait_arm_status(timeout_s=3.0)
+        except TimeoutError as error:
+            arm_status = None
+            success = False
+            print("arm status error:", error)
+        print("arm_status:", arm_status)
+        print("feedback_frames:", client.get_feedback_frame_status())
+        return 0 if success else 1
     finally:
         client.disconnect()
 
